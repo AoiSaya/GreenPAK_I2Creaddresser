@@ -5,14 +5,14 @@ SLG46826V(STQFN) または SLG46826G(TSSOP) に対応しています。
 同じアドレスをもつ複数のI2Cデバイスへのアクセスを可能にします。  
 
 ## 機能
-- 同じアドレスを持つ複数のスレーブデバイスを１つのマスターから個別に制御可能  
-- マスターの口：１、スレーブの口：４ に対応  
+- 同じアドレスを持つ複数のターゲットデバイスを１つのコントローラから個別に制御可能  
+- コントローラの口：１、ターゲットの口：４ に対応  
 - オーバーヘッドなしに通常のI2Cアクセスフォーマットでのデバイス選択が可能  
-- マスターの口およびスレーブの口におよそ10kΩのプルアップ抵抗を内蔵
+- コントローラの口およびターゲットの口におよそ10kΩのプルアップ抵抗を内蔵
 - 異電源電圧間のI2C通信が可能  
 
 ### 注意
-本デザインは、スレーブの口ごとにデバイスをひとつづつ接続することを想定しています  
+本デザインは、ターゲットの口ごとにデバイスをひとつづつ接続することを想定しています  
 
 ### 本デザインの使用イメージ
 パスコンは省略してあります。  
@@ -24,24 +24,24 @@ STQFN Pin # | TSSOP Pin # | 機能名 | IO | 内蔵抵抗 | SLG46826端子名 | 
 --- | --- | --- | --- | --- | --- | ---
 1 | 20 |VDD | - | - | VDD | 2.3V～5.5V for VDD side
 2 | 19 | DISABLE | I | PD10k | IO0 | 1: connection disable
-3 | 18 | SCL4 | IO | PU10k | IO1 | SCL No.4 to slave
-4 | 17 | SADR0 | I | PU100k | IO2 | Slave address selection A4
-5 | 16 | SADR1 | I | PD100k | IO3 | Slave address selection A5
-6 | 15 | SCLM | IO | PU10k | IO4 | SCL from master
-7 | 14 | SDAM | IO | PU10k | IO5 | SDA from master
+3 | 18 | SCL4 | IO | PU10k | IO1 | SCL No.4 to target
+4 | 17 | SADR0 | I | PU100k | IO2 | Target address selection A4
+5 | 16 | SADR1 | I | PD100k | IO3 | Target address selection A5
+6 | 15 | SCLM | IO | PU10k | IO4 | SCL from controller
+7 | 14 | SDAM | IO | PU10k | IO5 | SDA from controller
 8 | 13 | SCL | I | - | SCL | SCL for SLG46826
 9 | 12 | SDA | IO | - | SDA | SDA for SLG46826
 10 | 11 | POR | O | - | IO6 | Power on reset monitor. 0: Reset
 11 | 10 | GND | - | - | GND | GND
-12 | 9 | SCL4O | O | PU10k | IO7 | SCL No.4 to slave (option)
-13 | 8 | SDA4 | IO | PU10k | IO8 | SDA No.4 to slave
+12 | 9 | SCL4O | O | PU10k | IO7 | SCL No.4 to target (option)
+13 | 8 | SDA4 | IO | PU10k | IO8 | SDA No.4 to target
 14 | 7 | VDD2 | - | - | VDD2 | 1.71V～VDD for VDD2 side
-15 | 6 | SCL3 | IO | PU10k | IO9 | SCL No.3 to slave
-16 | 5 | SDA3 | IO | PU10k | IO10 | SDA No.3 to slave
-17 | 4 | SCL2 | IO | PU10k | IO11 | SCL No.2 to slave
-18 | 3 | SDA2 | IO | PU10k | IO12 | SDA No.2 to slave
-19 | 2 | SCL1 | IO | PU10k | IO13 | SCL No.1 to slave
-20 | 1 | SDA1 | IO | PU10k | IO14 | SDA No.1 to slave
+15 | 6 | SCL3 | IO | PU10k | IO9 | SCL No.3 to target
+16 | 5 | SDA3 | IO | PU10k | IO10 | SDA No.3 to target
+17 | 4 | SCL2 | IO | PU10k | IO11 | SCL No.2 to target
+18 | 3 | SDA2 | IO | PU10k | IO12 | SDA No.2 to target
+19 | 2 | SCL1 | IO | PU10k | IO13 | SCL No.1 to target
+20 | 1 | SDA1 | IO | PU10k | IO14 | SDA No.1 to target
   
 ### 内蔵抵抗
 各端子の内蔵抵抗を有効にしてありますので、I2Cの外付けプルアップ抵抗などを省略できます。  
@@ -56,7 +56,7 @@ STQFN版のPin #1～10 および TSSOP版のPin #11～20は、VDD電源で動作
 STQFN版のPin #11～20 および TSSOP版のPin #1～10は、VDD2電源で動作します。1.71V～VDD電源の電圧まで使えます。  
 
 ### DISABLE端子の使い方
-DISABLE=1とするとプルアップ抵抗を有効としたままマスター側とスレーブ側の通信を遮断します。  
+DISABLE=1とするとプルアップ抵抗を有効としたままコントローラ側とターゲット側の通信を遮断します。  
 DISABLE=0ではノーマル動作となります。  
 DISABLEを使わない場合はGND接続またはopenとします。  
 
@@ -66,11 +66,11 @@ SCL4Oを使う場合は、SCL4はオープンとしてください。
 SCL4Oを使わない場合は、SCL4Oをオープンとしてください。  
 
 †クロックストレッチ  
-　スレーブ側がデータを送信するときに、処理時間が間に合わないなどの理由で強制的にクロックラインをLowにしてマスタ側が次のクロックを送信するのを待たせる機能。  
+　ターゲット側がデータを送信するときに、処理時間が間に合わないなどの理由で強制的にクロックラインをLowにしてコントローラ側が次のクロックを送信するのを待たせる機能。  
 
 ### コントロールコードの設定
 
-コントロールコードはSLG46826の7ビットのスレーブアドレスの上位4ビットに対応します。  
+コントロールコードはSLG46826の7ビットのターゲットアドレスの上位4ビットに対応します。  
 コントロールコードはSADR1、SADR0端子で設定します。  
 
 SADR1 | SADR0| コントロールコード | 占有アドレス
@@ -84,7 +84,7 @@ open | open | 0001 | 0001xxx
 
 ## 使い方
 
-本デザインは、デバイスのアドレスをスレーブの口ごとに異なる仮アドレスをつけることで、同じアドレスを持つ複数のスレーブデバイスへの個別のアクセスを可能にしています。各スレーブアドレスへのリードライトアクセスは仮アドレスで行うことができます。  
+本デザインは、デバイスのアドレスをターゲットの口ごとに異なる仮アドレスをつけることで、同じアドレスを持つ複数のターゲットデバイスへの個別のアクセスを可能にしています。各ターゲットアドレスへのリードライトアクセスは仮アドレスで行うことができます。  
 仮アドレスのつけ方はデザイン中のProgrammable Pattern Generator (PGen)の パターンを書き換えることで変更することができます。    
 
 ### 仮アドレスの計算例
